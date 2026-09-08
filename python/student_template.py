@@ -30,24 +30,38 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     comps = 0
     moves = 0
 
-    # =========================================================================
-    # TODO: Escreva sua lógica autoral aqui.
-    # Exemplo temporário (substitua pelo seu algoritmo):
-    for i in range(1, n):
-        key = a[i]
-        moves += 1
-        j = i - 1
-        while j >= 0:
+    left = 0
+    right = n - 1
+
+    while left < right:
+        min_idx = left
+        max_idx = left
+
+        # Varredura simultânea para encontrar o mínimo e o máximo no intervalo atual
+        for i in range(left + 1, right + 1):
             comps += 1
-            if a[j] > key:
-                a[j + 1] = a[j]
-                moves += 1
-                j -= 1
-            else:
-                break
-        a[j + 1] = key
-        moves += 1
-    # =========================================================================
+            if a[i] < a[min_idx]:
+                min_idx = i
+
+            comps += 1
+            if a[i] > a[max_idx]:
+                max_idx = i
+
+        if max_idx == left:
+            max_idx = min_idx
+
+        # Posiciona o menor elemento na esquerda
+        if min_idx != left:
+            a[left], a[min_idx] = a[min_idx], a[left]
+            moves += 3
+
+        # Posiciona o maior elemento na direita
+        if max_idx != right:
+            a[right], a[max_idx] = a[max_idx], a[right]
+            moves += 3
+
+        left += 1
+        right -= 1
 
     return a, comps, moves
 
