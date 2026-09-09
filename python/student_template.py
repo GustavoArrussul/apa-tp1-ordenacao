@@ -14,7 +14,7 @@ import unittest
 
 def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     """
-    Algoritmo Autoral: Min-Max Bidirecional Otimizado (com Early Exit)
+    Algoritmo Autoral: Min-Max Bidirecional Robusto
     """
     a = list(arr)
     n = len(a)
@@ -27,9 +27,8 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     while left < right:
         min_idx = left
         max_idx = left
-        swapped = False
 
-        # Varredura simultânea para encontrar o mínimo e o máximo no intervalo atual
+        # Varredura para encontrar o menor e o maior no intervalo [left, right]
         for i in range(left + 1, right + 1):
             comps += 1
             if a[i] < a[min_idx]:
@@ -39,25 +38,22 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
             if a[i] > a[max_idx]:
                 max_idx = i
 
-        # Se o máximo estava na posição 'left' e vamos mover o mínimo para lá, atualizamos o max_idx para que não se perca.
-        if max_idx == left:
-            max_idx = min_idx
+        # Se o elemento mínimo já está na posição 'left' e o máximo na 'right',
+        # e o intervalo interno estiver ordenado, podemos otimizar ou apenas prosseguir.
 
-        # Posiciona o menor elemento na esquerda
+        # Posiciona o menor elemento na extremidade esquerda
         if min_idx != left:
             a[left], a[min_idx] = a[min_idx], a[left]
             moves += 2
-            swapped = True
+            # Se o max_idx estava exatamente na posição 'left' que acabamos de trocar,
+            # ele foi movido para a posição 'min_idx'. Atualizamos o rastreio dele.
+            if max_idx == left:
+                max_idx = min_idx
 
-        # Posiciona o maior elemento na direita
+        # Posiciona o maior elemento na extremidade direita
         if max_idx != right:
             a[right], a[max_idx] = a[max_idx], a[right]
             moves += 2
-            swapped = True
-
-        # Otimização de Parada Antecipada (Early Exit):Se nenhuma troca ocorreu nessa passada, a lista já está totalmente ordenada.
-        if not swapped:
-            break
 
         left += 1
         right -= 1
