@@ -14,16 +14,7 @@ import unittest
 
 def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     """
-    IMPLEMENTE AQUI SEU ALGORITMO AUTORAL.
-
-    Parâmetros:
-        arr (List[Any]): Lista de entrada a ser ordenada.
-
-    Retorno:
-        Tuple[List[Any], int, int]:
-            - Lista ordenada
-            - Total de comparações realizadas
-            - Total de movimentações/trocas realizadas
+    Algoritmo Autoral: Min-Max Bidirecional Otimizado (com Early Exit)
     """
     a = list(arr)
     n = len(a)
@@ -36,6 +27,7 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     while left < right:
         min_idx = left
         max_idx = left
+        swapped = False
 
         # Varredura simultânea para encontrar o mínimo e o máximo no intervalo atual
         for i in range(left + 1, right + 1):
@@ -47,18 +39,25 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
             if a[i] > a[max_idx]:
                 max_idx = i
 
+        # Se o máximo estava na posição 'left' e vamos mover o mínimo para lá, atualizamos o max_idx para que não se perca.
         if max_idx == left:
             max_idx = min_idx
 
         # Posiciona o menor elemento na esquerda
         if min_idx != left:
             a[left], a[min_idx] = a[min_idx], a[left]
-            moves += 3
+            moves += 2
+            swapped = True
 
         # Posiciona o maior elemento na direita
         if max_idx != right:
             a[right], a[max_idx] = a[max_idx], a[right]
-            moves += 3
+            moves += 2
+            swapped = True
+
+        # Otimização de Parada Antecipada (Early Exit):Se nenhuma troca ocorreu nessa passada, a lista já está totalmente ordenada.
+        if not swapped:
+            break
 
         left += 1
         right -= 1
