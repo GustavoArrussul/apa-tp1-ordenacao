@@ -14,21 +14,38 @@ import unittest
 
 def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
     """
-    Algoritmo Autoral: Min-Max Bidirecional Robusto
+    Algoritmo Autoral: Min-Max Bidirecional Otimizado (In-place)
+
+    Descrição da Estratégia:
+    O algoritmo realiza uma varredura simultânea convergente nas duas extremidades
+    do subvetor ativo [left, right]. A cada iteração, identifica-se o índice do menor
+    valor (min_idx) e do maior valor (max_idx) por meio de varredura linear linearizada.
+    Ambos os elementos são imediatamente posicionados em suas localizações definitivas
+    nas bordas, reduzindo o espaço de busca simetricamente em duas unidades por ciclo.
+
+    Complexidade Assintótica:
+    - Pior Caso / Caso Médio: O(N^2) comparações
+    - Melhor Caso: O(N^2) estrutural (varredura completa de extremos)
+    - Espaço Auxiliar: O(1) (estritamente in-place)
     """
     a = list(arr)
     n = len(a)
     comps = 0
     moves = 0
 
+    # Otimização de guarda para entradas triviais (vazia ou unitária)
+    if n <= 1:
+        return a, comps, moves
+
     left = 0
     right = n - 1
 
+    # Invariante de laço: Os segmentos fora do intervalo [left, right] encontram-se ordenados em suas posições finais definitivas.
     while left < right:
         min_idx = left
         max_idx = left
 
-        # Varredura para encontrar o menor e o maior no intervalo [left, right]
+        # Varredura simultânea para encontrar os extremos no subvetor ativo
         for i in range(left + 1, right + 1):
             comps += 1
             if a[i] < a[min_idx]:
@@ -38,22 +55,19 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
             if a[i] > a[max_idx]:
                 max_idx = i
 
-        # Se o elemento mínimo já está na posição 'left' e o máximo na 'right',
-        # e o intervalo interno estiver ordenado, podemos otimizar ou apenas prosseguir.
-
-        # Posiciona o menor elemento na extremidade esquerda
+        # Posicionamento do menor elemento na extremidade esquerda
         if min_idx != left:
             a[left], a[min_idx] = a[min_idx], a[left]
-            moves += 2
-            # Se o max_idx estava exatamente na posição 'left' que acabamos de trocar,
-            # ele foi movido para a posição 'min_idx'. Atualizamos o rastreio dele.
+            moves += 3
+
+            # Tratamento de colisão de índices: se o elemento máximo estava originalmente na posição 'left', ele foi deslocado para 'min_idx'.
             if max_idx == left:
                 max_idx = min_idx
 
-        # Posiciona o maior elemento na extremidade direita
+        # Posicionamento do maior elemento na extremidade direita
         if max_idx != right:
             a[right], a[max_idx] = a[max_idx], a[right]
-            moves += 2
+            moves += 3
 
         left += 1
         right -= 1
@@ -63,7 +77,7 @@ def my_authorial_sort(arr: List[Any]) -> Tuple[List[Any], int, int]:
 
 # =============================================================================
 # SUÍTE DE TESTES AUTOMÁTICA DE VALIDAÇÃO
-# =============================================================================
+# =============================================================
 class TestStudentAuthorialSort(unittest.TestCase):
     def assert_sorted(self, original: List, result: List):
         self.assertEqual(len(result), len(original), "Tamanho divergente!")
